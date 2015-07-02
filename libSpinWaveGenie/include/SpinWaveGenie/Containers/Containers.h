@@ -14,6 +14,7 @@
 #include "SpinWaveGenie/Containers/HKLDirections.h"
 #include "SpinWaveGenie/Containers/Matrices.h"
 #include "SpinWaveGenie/Containers/PointsAlongLine.h"
+#include "SpinWaveGenie/Containers/PointsOnAPlane.h"
 #include "SpinWaveGenie/Containers/Results.h"
 #include "SpinWaveGenie/Containers/Sublattice.h"
 #include "SpinWaveGenie/Containers/ThreeVectors.h"

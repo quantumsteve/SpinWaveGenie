@@ -39,7 +39,6 @@ namespace SpinWaveGenie
         //! Get resulting k-points along line.
         //! \return k-points along line.
         ThreeVectors<double> getPoints();
-        
     private:
         double m_H0,m_K0,m_L0,m_H1,m_K1,m_L1,m_H2,m_K2,m_L2;
         long m_numberPoints1,m_numberPoints2;

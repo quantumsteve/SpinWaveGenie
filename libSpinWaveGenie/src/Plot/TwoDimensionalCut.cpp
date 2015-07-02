@@ -142,7 +142,7 @@ TwoDimensionalCut &TwoDimensionalCut::operator=(TwoDimensionalCut &&other)
 
 TwoDimensionalCut::~TwoDimensionalCut(){};
 
-void TwoDimensionalCut::setFilename(string name) { m_p->filename = name; }
+void TwoDimensionalCut::setFilename(const std::string& name) { m_p->filename = name; }
 
 void TwoDimensionalCut::setPlotObject(unique_ptr<SpinWavePlot> object) { m_p->cut = move(object); }
 

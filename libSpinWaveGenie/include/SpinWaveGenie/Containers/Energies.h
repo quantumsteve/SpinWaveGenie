@@ -62,9 +62,9 @@ public:
   //! \return Returns an Iterator pointing to the end of the container.
   Iterator end();
   //! \return Returns a ConstIterator pointing to the first element of the container.
-  ConstIterator cbegin();
+  ConstIterator cbegin() const;
   //! \return Returns a ConstIterator pointing to the end of the container.
-  ConstIterator cend();
+  ConstIterator cend() const;
   //! Destructor
   ~Energies(){};
 
@@ -80,8 +80,8 @@ inline Energies::Iterator Energies::begin() { return energies.begin(); }
 
 inline Energies::Iterator Energies::end() { return energies.end(); }
 
-inline Energies::ConstIterator Energies::cbegin() { return energies.cbegin(); }
+inline Energies::ConstIterator Energies::cbegin() const { return energies.cbegin(); }
 
-inline Energies::ConstIterator Energies::cend() { return energies.cend(); }
+inline Energies::ConstIterator Energies::cend() const { return energies.cend(); }
 }
 #endif /* defined(__spin_wave_genie__Energies__) */

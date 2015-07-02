@@ -24,7 +24,7 @@ public:
   TwoDimensionalCut &operator=(const TwoDimensionalCut &other);
   TwoDimensionalCut(TwoDimensionalCut &&other);
   TwoDimensionalCut &operator=(TwoDimensionalCut &&other);
-  void setFilename(std::string name);
+  void setFilename(const std::string& name);
   void setPoints(ThreeVectors<double> pos);
   void setEnergyPoints(double min, double max, size_t numberpoints);
   void setPlotObject(std::unique_ptr<SpinWavePlot> object);

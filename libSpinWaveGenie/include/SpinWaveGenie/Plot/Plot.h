@@ -20,6 +20,7 @@
 #include "SpinWaveGenie/Plot/OneDimensionalShapes.h"
 #include "SpinWaveGenie/Plot/SpinWaveDispersion.h"
 #include "SpinWaveGenie/Plot/SpinWavePlot.h"
+#include "SpinWaveGenie/Plot/ThreeDimensionalCut.h"
 #include "SpinWaveGenie/Plot/TwoDGaussian.h"
 #include "SpinWaveGenie/Plot/TwoDimensionalCut.h"
 #include "SpinWaveGenie/Plot/TwoDimensionalGaussian.h"

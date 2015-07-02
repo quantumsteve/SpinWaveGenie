@@ -64,6 +64,8 @@ endif()
 
 find_package(Eigen3 REQUIRED)
 
+find_package(VTK REQUIRED)
+
 if(USE_THREADS)
   find_package(TBB)
 endif()

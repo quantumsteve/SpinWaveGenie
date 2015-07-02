@@ -53,8 +53,9 @@ set_property( TARGET SpinWaveGenie PROPERTY
 )
 target_include_directories( SpinWaveGenie SYSTEM INTERFACE PUBLIC ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
 target_include_directories( SpinWaveGenie PRIVATE src)
-target_include_directories( SpinWaveGenie SYSTEM PRIVATE ${TBB_INCLUDE_DIRS})
-target_link_libraries( SpinWaveGenie PRIVATE ${TBB_LIBRARIES})
+target_include_directories( SpinWaveGenie SYSTEM PRIVATE ${TBB_INCLUDE_DIRS} ${VTK_INCLUDE_DIRS})
+target_link_libraries( SpinWaveGenie PRIVATE ${TBB_LIBRARIES} ${VTK_LIBRARIES})
+set_property(TARGET SpinWaveGenie APPEND PROPERTY COMPILE_DEFINITIONS "${VTK_DEFINITIONS}")
 
 if(BUILD_TESTING)
     add_subdirectory(test)

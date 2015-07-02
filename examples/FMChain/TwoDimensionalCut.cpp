@@ -26,23 +26,23 @@ int main()
 
     SpinWave SW = builder.createElement();
     
-    PointsAlongLine Line;
-    Line.setFirstPoint(0.0,0.0,0.0);
-    Line.setFinalPoint(3.0,0.0,0.0);
-    Line.setNumberPoints(201);
-    ThreeVectors<double> kPoints = Line.getPoints();
+    PointsOnAPlane plane;
+    plane.setOriginPoint(0.0,0.0,0.0);
+    plane.setFinalPointFirstDirection(3.0,0.0,0.0);
+    plane.setFinalPointSecondDirection(0.0,3.0,0.0);
+    plane.setNumberPoints(201,101);
     
-    Energies energies(0.0, 5.0, 201);
+    Energies energies(0.0, 5.0,101);
     
     OneDimensionalFactory factory;
     auto gauss = factory.getGaussian(0.25,1.0e-5);
     
     unique_ptr<SpinWavePlot> res(new EnergyResolutionFunction(move(gauss), SW,energies));
     
-    TwoDimensionalCut twodimcut;
+    ThreeDimensionalCut twodimcut;
     twodimcut.setFilename("FMcut");
     twodimcut.setPlotObject(move(res));
-    twodimcut.setPoints(kPoints);
+    twodimcut.setPoints(plane);
     twodimcut.save();
     return 0;
 }

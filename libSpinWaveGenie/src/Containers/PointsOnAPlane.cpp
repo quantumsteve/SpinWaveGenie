@@ -8,7 +8,6 @@
 
 #include <stdio.h>
 #include "SpinWaveGenie/Containers/PointsOnAPlane.h"
-#include "SpinWaveGenie/Containers/Cell.h"
 
 namespace SpinWaveGenie
 {
@@ -61,9 +60,9 @@ namespace SpinWaveGenie
                 double Lmi = m_L0 + (m_L2 - m_L0) * static_cast<double>(m) / static_cast<double>(m_numberPoints2 - 1);
                 for (auto n = 0; n < m_numberPoints1; ++n)
                 {
-                    double Hni = m_H0 + (m_H1 - m_H0) * static_cast<double>(m) / static_cast<double>(m_numberPoints1 - 1);
-                    double Kni = m_K0 + (m_K1 - m_K0) * static_cast<double>(m) / static_cast<double>(m_numberPoints1 - 1);
-                    double Lni = m_L0 + (m_L1 - m_L0) * static_cast<double>(m) / static_cast<double>(m_numberPoints1 - 1);
+                    double Hni = m_H0 + (m_H1 - m_H0) * static_cast<double>(n) / static_cast<double>(m_numberPoints1 - 1);
+                    double Kni = m_K0 + (m_K1 - m_K0) * static_cast<double>(n) / static_cast<double>(m_numberPoints1 - 1);
+                    double Lni = m_L0 + (m_L1 - m_L0) * static_cast<double>(n) / static_cast<double>(m_numberPoints1 - 1);
                     Kpoints.insert(Hmi+Hni,Kmi+Kni,Lmi+Lni);
                 }
             }
