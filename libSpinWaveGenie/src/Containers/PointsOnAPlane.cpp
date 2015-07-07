@@ -11,62 +11,52 @@
 
 namespace SpinWaveGenie
 {
-    
-    void PointsOnAPlane::setOriginPoint(double H0, double K0, double L0)
+
+void PointsOnAPlane::setProjections(const std::array<double, 3> &proj1, const std::array<double, 3> &proj2)
+{
+  m_proj1 = proj1;
+  m_proj2 = proj2;
+}
+
+void PointsOnAPlane::setExtents(const SpinWaveGenie::Extent &extent1, const SpinWaveGenie::Extent &extent2)
+{
+  m_extents[0] = extent1;
+  m_extents[1] = extent2;
+}
+
+const std::array<Extent, 2> &PointsOnAPlane::getExtents() { return m_extents; }
+
+ThreeVectors<double> PointsOnAPlane::getPoints()
+{
+  double numberPoints1 = m_extents[0].numberOfBins;
+  double numberPoints2 = m_extents[1].numberOfBins;
+
+  double H0 = m_extents[0].minimumValue * m_proj1[0] + m_extents[1].minimumValue * m_proj2[0];
+  double K0 = m_extents[0].minimumValue * m_proj1[1] + m_extents[1].minimumValue * m_proj2[1];
+  double L0 = m_extents[0].minimumValue * m_proj1[2] + m_extents[1].minimumValue * m_proj2[2];
+
+  double H1 = m_extents[0].maximumValue * m_proj1[0] + m_extents[1].minimumValue * m_proj2[0];
+  double K1 = m_extents[0].maximumValue * m_proj1[1] + m_extents[1].minimumValue * m_proj2[1];
+  double L1 = m_extents[0].maximumValue * m_proj1[2] + m_extents[1].minimumValue * m_proj2[2];
+
+  double H2 = m_extents[0].minimumValue * m_proj1[0] + m_extents[1].maximumValue * m_proj2[0];
+  double K2 = m_extents[0].minimumValue * m_proj1[1] + m_extents[1].maximumValue * m_proj2[1];
+  double L2 = m_extents[0].minimumValue * m_proj1[2] + m_extents[1].maximumValue * m_proj2[2];
+
+  ThreeVectors<double> Kpoints;
+  for (auto m = 0; m < numberPoints2; ++m)
+  {
+    double Hmi = H0 + (H2 - H0) * static_cast<double>(m) / static_cast<double>(numberPoints2 - 1);
+    double Kmi = K0 + (K2 - K0) * static_cast<double>(m) / static_cast<double>(numberPoints2 - 1);
+    double Lmi = L0 + (L2 - L0) * static_cast<double>(m) / static_cast<double>(numberPoints2 - 1);
+    for (auto n = 0; n < numberPoints1; ++n)
     {
-        m_H0 = H0;
-        m_K0 = K0;
-        m_L0 = L0;
+      double Hni = H0 + (H1 - H0) * static_cast<double>(n) / static_cast<double>(numberPoints1 - 1);
+      double Kni = K0 + (K1 - K0) * static_cast<double>(n) / static_cast<double>(numberPoints1 - 1);
+      double Lni = L0 + (L1 - L0) * static_cast<double>(n) / static_cast<double>(numberPoints1 - 1);
+      Kpoints.insert(Hmi + Hni, Kmi + Kni, Lmi + Lni);
     }
-    
-    void PointsOnAPlane::setFinalPointFirstDirection(double H1, double K1, double L1)
-    {
-        m_H1 = H1;
-        m_K1 = K1;
-        m_L1 = L1;
-    }
-    
-    void PointsOnAPlane::setFinalPointSecondDirection(double H2, double K2, double L2)
-    {
-        m_H2 = H2;
-        m_K2 = K2;
-        m_L2 = L2;
-    }
-    
-    void PointsOnAPlane::setNumberPoints(std::size_t points1, std::size_t points2)
-    {
-        m_numberPoints1 = points1;
-        m_numberPoints2 = points2;
-    }
-    
-    std::tuple<std::size_t,std::size_t> PointsOnAPlane::getNumberPoints()
-    {
-        return std::tie(m_numberPoints1,m_numberPoints2);
-    }
-       
-    ThreeVectors<double> PointsOnAPlane::getPoints()
-    {
-        ThreeVectors<double> Kpoints;
-        if (m_numberPoints1 == 1 && m_numberPoints2 == 1)
-        {
-            Kpoints.insert(m_H0, m_K0, m_L0);
-        }
-        else
-        {
-            for (auto m = 0; m < m_numberPoints2; ++m)
-            {
-                double Hmi = m_H0 + (m_H2 - m_H0) * static_cast<double>(m) / static_cast<double>(m_numberPoints2 - 1);
-                double Kmi = m_K0 + (m_K2 - m_K0) * static_cast<double>(m) / static_cast<double>(m_numberPoints2 - 1);
-                double Lmi = m_L0 + (m_L2 - m_L0) * static_cast<double>(m) / static_cast<double>(m_numberPoints2 - 1);
-                for (auto n = 0; n < m_numberPoints1; ++n)
-                {
-                    double Hni = m_H0 + (m_H1 - m_H0) * static_cast<double>(n) / static_cast<double>(m_numberPoints1 - 1);
-                    double Kni = m_K0 + (m_K1 - m_K0) * static_cast<double>(n) / static_cast<double>(m_numberPoints1 - 1);
-                    double Lni = m_L0 + (m_L1 - m_L0) * static_cast<double>(n) / static_cast<double>(m_numberPoints1 - 1);
-                    Kpoints.insert(Hmi+Hni,Kmi+Kni,Lmi+Lni);
-                }
-            }
-        }
-        return Kpoints;
-    }
+  }
+  return Kpoints;
+}
 }

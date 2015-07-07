@@ -7,42 +7,39 @@ using namespace SpinWaveGenie;
 
 int main()
 {
-    Cell cell;
-    cell.setBasisVectors(1.0,2.0,10.0,90.0,90.0,90.0);
-    
-    Sublattice spin0;
-    string name0 = "Spin0";
-    spin0.setName(name0);
-    spin0.setType("NONE");
-    spin0.setMoment(1.0,0.0,0.0);
-    cell.addSublattice(spin0);
-    cell.addAtom(name0,0.0,0.0,0.0);
+  Cell cell;
+  cell.setBasisVectors(1.0, 2.0, 10.0, 90.0, 90.0, 90.0);
 
-    SpinWaveBuilder builder(cell);
-    
-    InteractionFactory interactions;
-    
-    builder.addInteraction(interactions.getExchange("J",1.0,name0,name0,0.9,1.1));
+  Sublattice spin0;
+  string name0 = "Spin0";
+  spin0.setName(name0);
+  spin0.setType("NONE");
+  spin0.setMoment(1.0, 0.0, 0.0);
+  cell.addSublattice(spin0);
+  cell.addAtom(name0, 0.0, 0.0, 0.0);
 
-    SpinWave SW = builder.createElement();
-    
-    PointsOnAPlane plane;
-    plane.setOriginPoint(0.0,0.0,0.0);
-    plane.setFinalPointFirstDirection(3.0,0.0,0.0);
-    plane.setFinalPointSecondDirection(0.0,3.0,0.0);
-    plane.setNumberPoints(201,201);
-    
-    Energies energies(0.0, 10.0,101);
-    
-    OneDimensionalFactory factory;
-    auto gauss = factory.getGaussian(0.25,1.0e-5);
-    
-    unique_ptr<SpinWavePlot> res(new EnergyResolutionFunction(move(gauss), SW,energies));
-    
-    ThreeDimensionalCut twodimcut;
-    twodimcut.setFilename("FMcut");
-    twodimcut.setPlotObject(move(res));
-    twodimcut.setPoints(plane);
-    twodimcut.save();
-    return 0;
+  SpinWaveBuilder builder(cell);
+
+  InteractionFactory interactions;
+
+  builder.addInteraction(interactions.getExchange("J", 1.0, name0, name0, 0.9, 1.1));
+
+  SpinWave SW = builder.createElement();
+
+  PointsOnAPlane plane;
+  plane.setProjections({{1.0, 0.0, 0.0}}, {{0.0, 1.0, 0.0}});
+  plane.setExtents({0.0, 3.0, 201}, {0.0, 3.0, 201});
+  Energies energies(0.0, 10.0, 101);
+
+  OneDimensionalFactory factory;
+  auto gauss = factory.getGaussian(0.25, 1.0e-5);
+
+  unique_ptr<SpinWavePlot> res(new EnergyResolutionFunction(move(gauss), SW, energies));
+
+  ThreeDimensionalCut twodimcut;
+  twodimcut.setFilename("FMcut");
+  twodimcut.setPlotObject(move(res));
+  twodimcut.setPoints(plane);
+  twodimcut.save();
+  return 0;
 }
