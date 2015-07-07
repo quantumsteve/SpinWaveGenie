@@ -8,7 +8,7 @@ using namespace SpinWaveGenie;
 int main()
 {
     Cell cell;
-    cell.setBasisVectors(1.0,10.0,10.0,90.0,90.0,90.0);
+    cell.setBasisVectors(1.0,2.0,10.0,90.0,90.0,90.0);
     
     Sublattice spin0;
     string name0 = "Spin0";
@@ -30,9 +30,9 @@ int main()
     plane.setOriginPoint(0.0,0.0,0.0);
     plane.setFinalPointFirstDirection(3.0,0.0,0.0);
     plane.setFinalPointSecondDirection(0.0,3.0,0.0);
-    plane.setNumberPoints(201,101);
+    plane.setNumberPoints(201,201);
     
-    Energies energies(0.0, 5.0,101);
+    Energies energies(0.0, 10.0,101);
     
     OneDimensionalFactory factory;
     auto gauss = factory.getGaussian(0.25,1.0e-5);
