@@ -86,3 +86,35 @@ BOOST_AUTO_TEST_CASE( IteratorTest )
     }
 
 }
+
+BOOST_AUTO_TEST_CASE(AtomIteratorTest)
+{
+  ThreeVectors<double> doubleTest;
+  doubleTest.insert(0.0, 0.0, 0.0);
+  doubleTest.insert(1.0, 1.0, 1.0);
+  doubleTest.insert(2.0, 2.0, 2.0);
+  doubleTest.insert(3.0, 3.0, 3.0);
+  doubleTest.insert(4.0, 4.0, 4.0);
+
+  std::vector<double> v0, v1, v2;
+
+  for (auto it = doubleTest.begin(); it != doubleTest.end(); ++it)
+  {
+    v0.push_back(it->get<0>());
+    v1.push_back(it->get<1>());
+    v2.push_back(it->get<2>());
+  }
+
+  ThreeVectorsIterator<double> begin(v0.begin(), v1.begin(), v2.begin());
+  ThreeVectorsIterator<double> end(v0.end(), v1.end(), v2.end());
+  for (auto it = begin; it != end; ++it)
+  {
+    std::cout << (*it)[0] << " " << (*it)[1] << " " << (*it)[2] << std::endl;
+  }
+
+  // std::cout << it << "\n";
+
+  // std::cout << a << std::endl;
+
+  // std::cout << it[0] << " " << it[1] << " " << it[2] << "\n";
+}
