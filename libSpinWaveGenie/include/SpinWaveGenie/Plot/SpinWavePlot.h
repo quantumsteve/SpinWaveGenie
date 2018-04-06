@@ -6,6 +6,9 @@
 #include "SpinWaveGenie/Export.h"
 #include "SpinWaveGenie/Genie/SpinWave.h"
 #include "SpinWaveGenie/Plot/OneDimensionalGaussian.h"
+
+#include "absl/types/span.h"
+
 #include <iostream>
 #include <vector>
 
@@ -21,6 +24,7 @@ public:
   virtual const Energies &getEnergies() = 0;
   virtual void setEnergies(const Energies &energies) = 0;
   virtual std::vector<double> getCut(double kx, double ky, double kz) = 0; // returns constant-Q cut
+  virtual void getCut(absl::Span<double> data, double kx, double ky, double kz) = 0; // returns constant-Q cut
   virtual ~SpinWavePlot() = default;
 };
 }

@@ -28,6 +28,7 @@ public:
   IntegrateEnergy(const SpinWavePlot &resFunction, const Energies &energies, double delta, double tol = 0.01,
                   int maxEvals = 100000);
   std::vector<double> getCut(double kxIn, double kyIn, double kzIn) override;
+  void getCut(absl::Span<double> data, double kxIn, double kyIn, double kzIn) override;
   std::unique_ptr<SpinWavePlot> clone() const override;
   const Cell &getCell() const override;
   const Energies &getEnergies() override;

@@ -58,8 +58,9 @@ set_property( TARGET SpinWaveGenie PROPERTY VISIBILITY_INLINES_HIDDEN 1)
 target_include_directories( SpinWaveGenie SYSTEM INTERFACE PUBLIC ${Boost_INCLUDE_DIR} )
 target_include_directories( SpinWaveGenie PRIVATE src)
 target_include_directories( SpinWaveGenie SYSTEM PRIVATE ${TBB_INCLUDE_DIRS})
-target_link_libraries( SpinWaveGenie PUBLIC Eigen3::Eigen
-                                     PRIVATE ${TBB_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries( SpinWaveGenie PUBLIC Eigen3::Eigen)
+target_link_libraries( SpinWaveGenie PUBLIC absl::span)
+target_link_libraries( SpinWaveGenie PRIVATE ${TBB_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 if(BUILD_TESTING)
     add_subdirectory(test)
@@ -67,39 +68,39 @@ endif (BUILD_TESTING)
 
 include(GNUInstallDirs)
 
-install(TARGETS SpinWaveGenie EXPORT SpinWaveGenieTargets 
-                              ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-                              LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+#install(TARGETS SpinWaveGenie EXPORT SpinWaveGenieTargets 
+#                              ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#                              LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 #create package configuration files
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(
-    "${CMAKE_CURRENT_BINARY_DIR}/SpinWaveGenie/SpinWaveGenieConfigVersion.cmake"
-    VERSION ${SPINWAVEGENIE_VERSION}
-    COMPATIBILITY AnyNewerVersion
-)
+#include(CMakePackageConfigHelpers)
+#write_basic_package_version_file(
+#    "${CMAKE_CURRENT_BINARY_DIR}/SpinWaveGenie/SpinWaveGenieConfigVersion.cmake"
+#    VERSION ${SPINWAVEGENIE_VERSION}
+#    COMPATIBILITY AnyNewerVersion
+#)
 
-export(EXPORT SpinWaveGenieTargets
-    FILE "${CMAKE_CURRENT_BINARY_DIR}/SpinWaveGenie/SpinWaveGenieTargets.cmake"
-    NAMESPACE SpinWaveGenie::
-)
+#export(EXPORT SpinWaveGenieTargets
+#    FILE "${CMAKE_CURRENT_BINARY_DIR}/SpinWaveGenie/SpinWaveGenieTargets.cmake"
+#    NAMESPACE SpinWaveGenie::
+#)
 
-configure_file(SpinWaveGenieConfig.cmake
-    "${CMAKE_CURRENT_BINARY_DIR}/SpinWaveGenie/SpinWaveGenieConfig.cmake"
-    COPYONLY
-)
+#configure_file(SpinWaveGenieConfig.cmake
+#    "${CMAKE_CURRENT_BINARY_DIR}/SpinWaveGenie/SpinWaveGenieConfig.cmake"
+#    COPYONLY
+#)
 
 #install package configuration files
-set(ConfigPackageLocation ${CMAKE_INSTALL_LIBDIR}/cmake/SpinWaveGenie)
-install(EXPORT SpinWaveGenieTargets
-    FILE SpinWaveGenieTargets.cmake
-    DESTINATION ${ConfigPackageLocation}
-)
+#set(ConfigPackageLocation ${CMAKE_INSTALL_LIBDIR}/cmake/SpinWaveGenie)
+#install(EXPORT SpinWaveGenieTargets
+#    FILE SpinWaveGenieTargets.cmake
+#    DESTINATION ${ConfigPackageLocation}
+#)
 
-install(
-    FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/SpinWaveGenie/SpinWaveGenieConfig.cmake"
-    "${CMAKE_CURRENT_BINARY_DIR}/SpinWaveGenie/SpinWaveGenieConfigVersion.cmake"
-    DESTINATION ${ConfigPackageLocation}
-)
+#install(
+#    FILES
+#    "${CMAKE_CURRENT_BINARY_DIR}/SpinWaveGenie/SpinWaveGenieConfig.cmake"
+#    "${CMAKE_CURRENT_BINARY_DIR}/SpinWaveGenie/SpinWaveGenieConfigVersion.cmake"
+#    DESTINATION ${ConfigPackageLocation}
+#)
 

@@ -1,6 +1,10 @@
 cmake_minimum_required (VERSION 3.1)
 project(SpinWaveGenie)
 
+set(BUILD_TESTING OFF CACHE BOOL "Disable tests which depend on benchmark" FORCE)
+add_subdirectory(cctz) # https://github.com/google/cctz.git
+add_subdirectory(abseil-cpp) # https://github.com/abseil/abseil-cpp.git
+
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_MACOSX_RPATH TRUE)
 

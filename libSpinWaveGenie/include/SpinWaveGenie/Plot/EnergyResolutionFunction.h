@@ -31,6 +31,7 @@ public:
                    const Energies &energiesIn);
   EnergyResolution(const OneDimensionalShapes &ResolutionFunctionIn, const T &SWIn, const Energies &energiesIn);
   std::vector<double> getCut(double kx, double ky, double kz) override;
+  void getCut(absl::Span<double> data, double kx, double ky, double kz) override;
   void setSpinWave(const T &SWIn);
   void setResolutionFunction(const OneDimensionalShapes &resolutionFunctionIn);
   void setResolutionFunction(std::unique_ptr<OneDimensionalShapes> resolutionFunctionIn);
@@ -122,6 +123,41 @@ template <class T> std::vector<double> EnergyResolution<T>::getCut(double kx, do
     }
   }
   return fval;
+}
+
+template <class T> void EnergyResolution<T>::getCut(absl::Span<double> data, double kx, double ky, double kz)
+{
+  // cout << "Energy Points: " << EnergyPoints << endl;
+  // cout << MinimumEnergy << " " << MaximumEnergy << endl;
+  size_t EnergyPoints = energies.size();
+  // std::vector<double> fval(EnergyPoints, 0.0);
+  if (EnergyPoints != data.size())
+  {
+    throw std::runtime_error("Incorrect size of span!");
+  }
+
+  std::fill(data.begin(), data.end(), 0.0);
+
+  SW.createMatrix(kx, ky, kz);
+  SW.calculate();
+  Results points = SW.getPoints();
+
+  // points.significantSolutions();
+
+  for (const auto &point : points)
+  {
+    if (std::isfinite(point.frequency) && std::isfinite(point.intensity))
+    {
+      const double min = point.frequency + ResolutionFunction->getMinimumEnergy();
+      const double max = point.frequency + ResolutionFunction->getMaximumEnergy();
+      const std::size_t UpperBound = energies.getUpperBound(max);
+      // std::cout << min << " " << energies.getLowerBound(min) << " " << max << " " << UpperBound << std::endl;
+      for (std::size_t index = energies.getLowerBound(min); index != UpperBound; ++index)
+      {
+        data[index] += point.intensity * ResolutionFunction->getFunction(point.frequency, energies[index]);
+      }
+    }
+  }
 }
 
 template <class T> const Cell &EnergyResolution<T>::getCell() const { return SW.getCell(); }

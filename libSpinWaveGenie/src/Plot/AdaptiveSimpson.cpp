@@ -1,9 +1,14 @@
+#include "SpinWaveGenie/Plot/AdaptiveSimpson.h"
+
 #include <cmath>
 #include <cassert>
 #include <iostream>
 #include <queue>
 #include <algorithm>
 #include <limits>
+
+#include "absl/types/span.h"
+
 #include "SpinWaveGenie/Plot/AdaptiveSimpson.h"
 
 struct helper
@@ -29,11 +34,12 @@ struct ComparePointers
 class AdaptiveSimpson::SimpsonImpl
 {
 public:
-  std::vector<double> sumPieces(
+  void sumPieces(
+      absl::Span<double> data,
       std::priority_queue<std::shared_ptr<helper>, std::vector<std::shared_ptr<helper>>, ComparePointers> &pieces);
   void createElement(const std::shared_ptr<helper> &mostError, const std::shared_ptr<helper> &element);
   void splitElement(const std::shared_ptr<helper> &mostError, const std::shared_ptr<helper> &element);
-  std::vector<double> integrate();
+  void integrate(absl::Span<double> data);
   std::function<std::vector<double>(std::deque<double> &evaluationPoints)> m_integrand;
   double m_lowerBound{0.0}, m_upperBound{0.0}, m_epsilon{1.0e-5};
   std::vector<double> m_lowerBoundsInnerDimensions, m_upperBoundsInnerDimensions;
@@ -91,6 +97,9 @@ void helper::initializeError()
 void AdaptiveSimpson::SimpsonImpl::createElement(const std::shared_ptr<helper> &mostError,
                                                  const std::shared_ptr<helper> &element)
 {
+
+  auto vsize = this->getEnergies().size();
+
   // element
   element->resetBounds(mostError->lowerlimit, 0.5 * (mostError->lowerlimit + mostError->upperlimit));
   element->epsilon = std::max(mostError->epsilon / M_SQRT2, std::numeric_limits<double>::epsilon());
@@ -108,7 +117,9 @@ void AdaptiveSimpson::SimpsonImpl::createElement(const std::shared_ptr<helper> &
   mostError->fc = std::move(mostError->fe);
   mostError->S = std::move(mostError->Sright);
 
-  if (!m_lowerBoundsInnerDimensions.empty())
+  auto vsize = this->getEnergies().size()
+
+                   if (!m_lowerBoundsInnerDimensions.empty())
   {
     // both
     AdaptiveSimpson test;
@@ -119,17 +130,21 @@ void AdaptiveSimpson::SimpsonImpl::createElement(const std::shared_ptr<helper> &
     // element
     m_evaluationPointsOuterDimensions[0] = element->d;
     test.setAdditionalEvaluationPoints(m_evaluationPointsOuterDimensions);
-    element->fd = test.integrate();
+    element->fd.resize(vsize);
+    test.integrate(absl::MakeSpan(element->fd.data(), vsize));
     m_evaluationPointsOuterDimensions[0] = element->e;
     test.setAdditionalEvaluationPoints(m_evaluationPointsOuterDimensions);
-    element->fe = test.integrate();
+    element->fe.resize(vsize);
+    test.integrate(absl::MakeSpan(element->fe.data(), vsize));
     // mostError
     m_evaluationPointsOuterDimensions[0] = mostError->d;
     test.setAdditionalEvaluationPoints(m_evaluationPointsOuterDimensions);
-    mostError->fd = test.integrate();
+    mostError->fd.resize(vsize);
+    test.integrate(absl::MakeSpan(mostError->fd.data(), vsize));
     m_evaluationPointsOuterDimensions[0] = mostError->e;
     test.setAdditionalEvaluationPoints(m_evaluationPointsOuterDimensions);
-    mostError->fe = test.integrate();
+    mostError->fe.resize(vsize);
+    test.integrate(absl::MakeSpan(mostError->fe.data(), vsize));
   }
   else
   {
@@ -155,11 +170,16 @@ void AdaptiveSimpson::SimpsonImpl::splitElement(const std::shared_ptr<helper> &m
   this->createElement(mostError, element);
 }
 
-std::vector<double> AdaptiveSimpson::SimpsonImpl::sumPieces(
+void AdaptiveSimpson::SimpsonImpl::sumPieces(
+    absl::Span<double> data,
     std::priority_queue<std::shared_ptr<helper>, std::vector<std::shared_ptr<helper>>, ComparePointers> &pieces)
 {
   std::size_t size = pieces.top()->Sleft.size();
-  std::vector<double> sum(size);
+  if (data.size() != size)
+  {
+    throw std::runtime_error("incorrect data span size!");
+  }
+  std::fill(data.begin(), data.end(), 0.0);
   double prefactor = 1.0 / 15.0;
   while (!pieces.empty())
   {
@@ -167,15 +187,16 @@ std::vector<double> AdaptiveSimpson::SimpsonImpl::sumPieces(
     for (std::size_t i = 0; i < size; i++)
     {
       double S2 = element->Sleft[i] + element->Sright[i];
-      sum[i] += S2 + prefactor * (S2 - element->S[i]);
+      data[i] += S2 + prefactor * (S2 - element->S[i]);
     }
     pieces.pop();
   }
-  return sum;
 }
 
-std::vector<double> AdaptiveSimpson::SimpsonImpl::integrate()
+void AdaptiveSimpson::SimpsonImpl::integrate(absl::Span<double> data)
 {
+
+  auto vsize = this->getEnergies().size();
 
   std::shared_ptr<helper> first = std::make_shared<helper>();
   first->resetBounds(m_lowerBound, m_upperBound);
@@ -190,19 +211,24 @@ std::vector<double> AdaptiveSimpson::SimpsonImpl::integrate()
     test.setPrecision(m_epsilon);
     m_evaluationPointsOuterDimensions.push_front(first->lowerlimit);
     test.setAdditionalEvaluationPoints(m_evaluationPointsOuterDimensions);
-    first->fa = test.integrate();
+    first->fa.resize(vsize);
+    test.integrate(asbl::MakeSpan(first.fa.data(), vsize));
     m_evaluationPointsOuterDimensions[0] = first->upperlimit;
     test.setAdditionalEvaluationPoints(m_evaluationPointsOuterDimensions);
-    first->fb = test.integrate();
+    first->fb.resize(vsize);
+    test.integrate(absl::MakeSpan(first->fb.data(), vsize));
     m_evaluationPointsOuterDimensions[0] = first->c;
     test.setAdditionalEvaluationPoints(m_evaluationPointsOuterDimensions);
-    first->fc = test.integrate();
+    first->fc.resize(vsize);
+    test.integrate(absl::MakeSpan(first.fc.data(), vsize));
     m_evaluationPointsOuterDimensions[0] = first->d;
     test.setAdditionalEvaluationPoints(m_evaluationPointsOuterDimensions);
-    first->fd = test.integrate();
+    first->fd.resize(vsize);
+    test.integrate(absl::MakeSpan(first.fd.data(), vsize));
     m_evaluationPointsOuterDimensions[0] = first->e;
     test.setAdditionalEvaluationPoints(m_evaluationPointsOuterDimensions);
-    first->fe = test.integrate();
+    first->fe.resize(vsize);
+    test.integrate(asbl::MakeSpan(first->fe.data(), vsize));
   }
   else
   {
@@ -241,7 +267,7 @@ std::vector<double> AdaptiveSimpson::SimpsonImpl::integrate()
   // reset the evaluation points;
   this->m_evaluationPointsOuterDimensions.pop_front();
 
-  return sumPieces(myqueue);
+  this->sumPieces(data, myqueue);
 }
 
 AdaptiveSimpson::AdaptiveSimpson() : m_p(std::make_unique<SimpsonImpl>()) {}
@@ -297,8 +323,7 @@ void AdaptiveSimpson::setInterval(const std::vector<double> &lowerBounds, const 
 void AdaptiveSimpson::setPrecision(double epsilon) { m_p->m_epsilon = epsilon; }
 
 void AdaptiveSimpson::setMaximumDivisions(std::size_t maximumDivisions) { m_p->m_maximumDivisions = maximumDivisions; }
-std::vector<double> AdaptiveSimpson::integrate() { return m_p->integrate(); }
-
+void AdaptiveSimpson::integrate(absl::Span<double> data) { m_p->integrate(data); }
 void AdaptiveSimpson::setAdditionalEvaluationPoints(const std::deque<double> &evaluationPoints)
 {
   m_p->m_evaluationPointsOuterDimensions = evaluationPoints;

@@ -2,6 +2,9 @@
 #define __AdaptiveSimpson__
 
 #include "SpinWaveGenie/Export.h"
+
+#include "absl/types/span.h"
+
 #include <deque>
 #include <functional>
 #include <memory>
@@ -44,7 +47,7 @@ public:
   void setMaximumDivisions(std::size_t maximumDivisions);
   //! Performs the integration
   //! \returns result of the integration.
-  std::vector<double> integrate();
+  void integrate(absl::Span<double> data);
   ~AdaptiveSimpson();
 
 private:

@@ -185,7 +185,7 @@ PYBIND11_MODULE(python_SpinWaveGenie, m)
 
   py::class_<SpinWavePlot>(m, "SpinWavePlot")
       .def("getCell", &SpinWavePlot::getCell, py::return_value_policy::reference_internal, "retrieve Cell")
-      .def("getCut", &SpinWavePlot::getCut, "retrieve the Cut")
+      //.def("getCut", &SpinWavePlot::getCut, "retrieve the Cut")
       .def("getEnergies", &SpinWavePlot::getEnergies, py::return_value_policy::reference_internal, "retrieve energies")
       .def("setEnergies", &SpinWavePlot::setEnergies, "set energies");
 
