@@ -38,7 +38,7 @@ if(CMAKE_GENERATOR STREQUAL Xcode)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
-  string(APPEND CMAKE_CXX_FLAGS " -DEIGEN_DONT_PARALLELIZE -Wall -Wextra")
+  string(APPEND CMAKE_CXX_FLAGS " -DEIGEN_DONT_PARALLELIZE -Wall -Wextra -fno-omit-frame-pointer")
 endif()
 
 option(WITH_SANITIZERS "Enable sanitizers" OFF)
@@ -62,6 +62,7 @@ if(WARNINGS_AS_ERRORS)
 endif()
 
 include(Eigen)
+include(Span)
 
 find_package(Threads)
 if(USE_THREADS)

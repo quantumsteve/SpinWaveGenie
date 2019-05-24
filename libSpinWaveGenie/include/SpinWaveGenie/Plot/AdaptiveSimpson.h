@@ -2,6 +2,9 @@
 #define __AdaptiveSimpson__
 
 #include "SpinWaveGenie/Export.h"
+
+#include "tcb/span.hpp"
+
 #include <deque>
 #include <functional>
 #include <memory>
@@ -45,6 +48,9 @@ public:
   //! Performs the integration
   //! \returns result of the integration.
   std::vector<double> integrate();
+  //! Performs the integration
+  //! \param result of integration.
+  void integrate(tcb::span<double> result);
   ~AdaptiveSimpson();
 
 private:

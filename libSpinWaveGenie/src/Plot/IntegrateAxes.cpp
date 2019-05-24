@@ -95,6 +95,42 @@ std::vector<double> IntegrateAxes::getCut(double kxIn, double kyIn, double kzIn)
   return result;
 }
 
+void IntegrateAxes::getCut(double kxIn, double kyIn, double kzIn, tcb::span<double> result)
+{
+  kx = kxIn;
+  ky = kyIn;
+  kz = kzIn;
+
+  std::size_t dim = integrationDirections.size();
+  xmin.clear();
+  xmin.reserve(dim);
+  xmax.clear();
+  xmax.reserve(dim);
+  for (const auto &elem : integrationDirections)
+  {
+    // cout << -1.0*it->delta << " " << it->delta << endl;
+    xmin.push_back(-1.0 * elem.delta);
+    xmax.push_back(elem.delta);
+  }
+
+  double volume = 1.0;
+  for (const auto &elem : integrationDirections)
+  {
+    volume *= 2.0 * elem.delta;
+  }
+  // cout << volume << endl;
+
+  std::function<std::vector<double>(std::deque<double> & x)> funct =
+      std::bind<std::vector<double>>(&IntegrateAxes::calculateIntegrand, this, std::placeholders::_1);
+  AdaptiveSimpson test;
+  test.setFunction(funct);
+  test.setInterval(xmin, xmax);
+  test.setPrecision(tolerance * volume);
+  test.setMaximumDivisions(maximumEvaluations);
+  test.integrate(result);
+  std::for_each(result.begin(), result.end(), DivideValue(volume));
+}
+
 const Cell &IntegrateAxes::getCell() const { return resolutionFunction->getCell(); }
 
 const Energies &IntegrateAxes::getEnergies() { return resolutionFunction->getEnergies(); }
