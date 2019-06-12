@@ -165,17 +165,7 @@ std::vector<double> AdaptiveSimpson::SimpsonImpl::sumPieces(
 {
   std::size_t size = pieces.top()->Sleft.size();
   std::vector<double> sum(size);
-  double prefactor = 1.0 / 15.0;
-  while (!pieces.empty())
-  {
-    const auto &element = pieces.top();
-    for (std::size_t i = 0; i < size; i++)
-    {
-      double S2 = element->Sleft[i] + element->Sright[i];
-      sum[i] += S2 + prefactor * (S2 - element->S[i]);
-    }
-    pieces.pop();
-  }
+  this->sumPieces(pieces, sum);
   return sum;
 }
 
@@ -188,7 +178,6 @@ void AdaptiveSimpson::SimpsonImpl::sumPieces(
   {
     throw std::runtime_error("span not of the correct size");
   }
-  std::fill(sum.begin(), sum.end(), 0.0);
   double prefactor = 1.0 / 15.0;
   while (!pieces.empty())
   {
@@ -202,74 +191,7 @@ void AdaptiveSimpson::SimpsonImpl::sumPieces(
   }
 }
 
-std::vector<double> AdaptiveSimpson::SimpsonImpl::integrate()
-{
-  std::shared_ptr<helper> first = std::make_shared<helper>();
-  first->resetBounds(m_lowerBound, m_upperBound);
-  first->epsilon = m_epsilon;
-
-  if (!m_lowerBoundsInnerDimensions.empty())
-  {
-    AdaptiveSimpson test;
-    test.setFunction(m_integrand);
-    test.setInterval(m_lowerBoundsInnerDimensions, m_upperBoundsInnerDimensions);
-    test.setMaximumDivisions(m_maximumDivisions);
-    test.setPrecision(m_epsilon);
-    m_evaluationPointsOuterDimensions.push_front(first->lowerlimit);
-    test.setAdditionalEvaluationPoints(m_evaluationPointsOuterDimensions);
-    first->fa = test.integrate();
-    m_evaluationPointsOuterDimensions[0] = first->upperlimit;
-    test.setAdditionalEvaluationPoints(m_evaluationPointsOuterDimensions);
-    first->fb = test.integrate();
-    m_evaluationPointsOuterDimensions[0] = first->c;
-    test.setAdditionalEvaluationPoints(m_evaluationPointsOuterDimensions);
-    first->fc = test.integrate();
-    m_evaluationPointsOuterDimensions[0] = first->d;
-    test.setAdditionalEvaluationPoints(m_evaluationPointsOuterDimensions);
-    first->fd = test.integrate();
-    m_evaluationPointsOuterDimensions[0] = first->e;
-    test.setAdditionalEvaluationPoints(m_evaluationPointsOuterDimensions);
-    first->fe = test.integrate();
-  }
-  else
-  {
-    m_evaluationPointsOuterDimensions.push_front(first->lowerlimit);
-    first->fa = m_integrand(m_evaluationPointsOuterDimensions);
-    m_evaluationPointsOuterDimensions[0] = first->upperlimit;
-    first->fb = m_integrand(m_evaluationPointsOuterDimensions);
-    m_evaluationPointsOuterDimensions[0] = first->c;
-    first->fc = m_integrand(m_evaluationPointsOuterDimensions);
-    m_evaluationPointsOuterDimensions[0] = first->d;
-    first->fd = m_integrand(m_evaluationPointsOuterDimensions);
-    m_evaluationPointsOuterDimensions[0] = first->e;
-    first->fe = m_integrand(m_evaluationPointsOuterDimensions);
-  }
-
-  first->initializeError();
-
-  std::priority_queue<std::shared_ptr<helper>, std::vector<std::shared_ptr<helper>>, ComparePointers> myqueue(
-      (ComparePointers()));
-  myqueue.push(std::move(first));
-
-  while (myqueue.size() < m_maximumDivisions)
-  {
-    std::shared_ptr<helper> mostError = myqueue.top();
-    if (mostError->error < mostError->epsilon)
-    {
-      break;
-    }
-    myqueue.pop();
-    std::shared_ptr<helper> element = std::make_shared<helper>();
-    splitElement(mostError, element);
-    myqueue.push(std::move(mostError));
-    myqueue.push(std::move(element));
-  }
-
-  // reset the evaluation points;
-  this->m_evaluationPointsOuterDimensions.pop_front();
-
-  return sumPieces(myqueue);
-}
+std::vector<double> AdaptiveSimpson::SimpsonImpl::integrate() { std::vector<double> this->integrate(result); }
 
 void AdaptiveSimpson::SimpsonImpl::integrate(tcb::span<double> result)
 {

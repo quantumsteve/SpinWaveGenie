@@ -97,31 +97,9 @@ template <class T> void EnergyResolution<T>::setSpinWave(const T &SWIn) { SW = S
 
 template <class T> std::vector<double> EnergyResolution<T>::getCut(double kx, double ky, double kz)
 {
-  // cout << "Energy Points: " << EnergyPoints << endl;
-  // cout << MinimumEnergy << " " << MaximumEnergy << endl;
   size_t EnergyPoints = energies.size();
   std::vector<double> fval(EnergyPoints, 0.0);
-
-  SW.createMatrix(kx, ky, kz);
-  SW.calculate();
-  Results points = SW.getPoints();
-
-  // points.significantSolutions();
-
-  for (const auto & point : points)
-  {
-    if (std::isfinite(point.frequency) && std::isfinite(point.intensity))
-    {
-      const double min = point.frequency + ResolutionFunction->getMinimumEnergy();
-      const double max = point.frequency + ResolutionFunction->getMaximumEnergy();
-      const std::size_t UpperBound = energies.getUpperBound(max);
-      // std::cout << min << " " << energies.getLowerBound(min) << " " << max << " " << UpperBound << std::endl;
-      for (std::size_t index = energies.getLowerBound(min); index != UpperBound; ++index)
-      {
-        fval[index] += point.intensity * ResolutionFunction->getFunction(point.frequency, energies[index]);
-      }
-    }
-  }
+  this->getCut(kx, ky, kz, fval);
   return fval;
 }
 
@@ -133,8 +111,6 @@ template <class T> void EnergyResolution<T>::getCut(double kx, double ky, double
   {
     throw std::runtime_error("span not of the correct size");
   }
-
-  std::fill(fval.begin(), fval.end(), 0.0);
 
   SW.createMatrix(kx, ky, kz);
   SW.calculate();
