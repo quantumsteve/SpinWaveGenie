@@ -51,7 +51,7 @@ public:
   //! \param ky y-component of Q-point, in Angstroms.
   //! \param kz z-component of Q-point, in Angstroms.
   double getFormFactor(double x, double y, double z);
-
+  void addFormFactor(const std::string &name, const std::vector<double> &coefficients);
 protected:
   std::unordered_map<std::string, std::vector<double>> coefficients;
 

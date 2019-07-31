@@ -5,17 +5,21 @@
 //  Created by Hahn, Steven E. on 11/20/13.
 //
 //
-#include <exception>
-#include <stdexcept>
-#include <numeric>
-#include <iostream>
-#include <string>
-#include <cmath>
-#include <functional>
-#include <algorithm>
-#include <boost/iterator/zip_iterator.hpp>
-#include <boost/tuple/tuple.hpp>
+
 #include "SpinWaveGenie/Genie/MagneticFormFactor.h"
+
+#include "boost/iterator/zip_iterator.hpp"
+#include "boost/tuple/tuple.hpp"
+#include "boost/math/special_functions/pow.hpp"
+
+
+#include <algorithm>
+#include <cmath>
+#include <exception>
+#include <functional>
+#include <iostream>
+#include <numeric>
+#include <string>
 
 using std::exp;
 using std::pow;
@@ -208,5 +212,15 @@ double MagneticFormFactor::getFormFactor(double x, double y, double z)
   auto begin = boost::make_zip_iterator(boost::make_tuple(Farray.begin(), NormalizedWeights.begin()));
   auto end = boost::make_zip_iterator(boost::make_tuple(Farray.end(), NormalizedWeights.end()));
   return std::accumulate(begin, end, 0.0, calculateFormFactor(x, y, z));
+}
+void MagneticFormFactor::addFormFactor(const std::string &name, const std::vector<double> &coeff)
+{
+  if (name.empty()) {
+    throw std::invalid_argument("Name may not be empty.");
+  }
+  if (coeff.size() != 7) {
+    throw std::invalid_argument("Coefficients array much contain 7 numbers.");
+  }
+  coefficients[name] = coeff;
 }
 }

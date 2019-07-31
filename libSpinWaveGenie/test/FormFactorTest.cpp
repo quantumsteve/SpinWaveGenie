@@ -105,7 +105,17 @@ BOOST_AUTO_TEST_CASE( IncorrectNumberOfTypes )
     BOOST_CHECK_THROW(FormFactor.setType(types,weights),std::runtime_error);
 }
 
-
+BOOST_AUTO_TEST_CASE( AddFormFactor )
+{
+  MagneticFormFactor FormFactor;
+  std::string name{""};
+  std::vector<double> coeffs {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+  BOOST_CHECK_THROW(FormFactor.addFormFactor(name, coeffs), std::invalid_argument);
+  name = "NONE";
+  BOOST_CHECK_THROW(FormFactor.addFormFactor(name, coeffs), std::invalid_argument);
+  coeffs.push_back(1.0);
+  BOOST_CHECK_NO_THROW(FormFactor.addFormFactor(name,coeffs));
+}
 
 
 
